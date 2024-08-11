@@ -53,14 +53,30 @@ fun Application.appDataRoute(autoUpdateRepoImp: AutoUpdateRepoImp) {
                     }
                 }
 
-                get {
-                    val allData = autoUpdateRepoImp.getAllData()
-                    call.respond(allData)
-                }
-
             }
 
 
+
+
+        }
+
+        route("/getData") {
+
+            get {
+                try {
+                    val apiKey = call.parameters["apiKey"]
+                    if (apiKey != null) {
+                        val allData = autoUpdateRepoImp.getDataByAPI(apiKey)
+                        call.respond(allData)
+                    } else {
+                        call.respond("API Key not found")
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
+
+                } catch (ex: Exception) {
+                    call.respond(HttpStatusCode.BadGateway)
+                }
+            }
         }
     }
 }

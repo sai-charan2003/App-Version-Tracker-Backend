@@ -63,6 +63,12 @@ class AutoUpdateRepoImp(userRepoImp : UserRepoImp) : AutoUpdateRepo {
         }
     }
 
+    override suspend fun getDataByAPI(api: String): List<AutoUpdate?> {
+        return dbQuery {
+            AutoUpdateTable.select(where = { AutoUpdateTable.apiKey eq api}).map(::rowToAutoUpdate)
+        }
+    }
+
     private fun rowToAutoUpdate(row:ResultRow?): AutoUpdate?{
         return if(row == null){
             null

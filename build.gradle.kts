@@ -24,10 +24,12 @@ application {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
     implementation("io.ktor:ktor-server-core-jvm")
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
     implementation("io.ktor:ktor-server-auth-jwt:1.3.2-1.4-M2")
@@ -45,4 +47,6 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("com.zaxxer:HikariCP:$hikari_version")
+    implementation("com.github.dotenv-org:dotenv-vault-kotlin:0.0.2")
+
 }

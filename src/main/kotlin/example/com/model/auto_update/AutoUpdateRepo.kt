@@ -8,4 +8,6 @@ interface AutoUpdateRepo{
     suspend fun updateData(autoUpdateData: AutoUpdate,userEmail:String)
     suspend fun getDataByEmail(email:String): List<AutoUpdate?>
 
+    suspend fun getDataByAPI(api:String) : List<AutoUpdate?>
+
 }
