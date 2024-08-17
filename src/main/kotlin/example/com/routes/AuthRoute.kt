@@ -15,19 +15,21 @@ fun Application.authRoute(userRepoImp: UserRepoImp) {
             post {
                 try {
                     val user = call.receive<User>()
+
                     if (userRepoImp.isUserExists(user)) {
                         call.respond(HttpStatusCode.Conflict, "Email already exists")
+                        return@post
+                    }
+
+                    val userFromDB = userRepoImp.createUser(user)
+                    if (userFromDB != null) {
+                        userFromDB.token = JWTConfig().generateJWTToken(user)
+                        call.respond(HttpStatusCode.Created, userFromDB)
                     } else {
-                        val userFromDB = userRepoImp.createUser(user)
-                        userFromDB?.token = JWTConfig().generateJWTToken(user)
-                        if (userFromDB != null) {
-                            call.respond(HttpStatusCode.Created, userFromDB)
-                        } else {
-                            call.respond(HttpStatusCode.InternalServerError, "User creation failed")
-                        }
+                        call.respond(HttpStatusCode.InternalServerError, "User creation failed")
                     }
                 } catch (ex: Exception) {
-                    println(ex)
+                    ex.printStackTrace()
                     call.respond(HttpStatusCode.BadRequest, "Invalid request data")
                 }
             }
@@ -37,19 +39,21 @@ fun Application.authRoute(userRepoImp: UserRepoImp) {
             post {
                 try {
                     val user = call.receive<User>()
+
                     if (!userRepoImp.isUserExists(user)) {
                         call.respond(HttpStatusCode.NotFound, "Email does not exist")
+                        return@post
+                    }
+
+                    val loginData = userRepoImp.loginUser(user)
+                    if (loginData == null) {
+                        call.respond(HttpStatusCode.Unauthorized, "Incorrect Password")
                     } else {
-                        val loginData = userRepoImp.loginUser(user)
-                        if (loginData == null) {
-                            call.respond(HttpStatusCode.Unauthorized, "Incorrect Password")
-                        } else {
-                            loginData.token = JWTConfig().generateJWTToken(loginData)
-                            call.respond(HttpStatusCode.OK, loginData)
-                        }
+                        loginData.token = JWTConfig().generateJWTToken(loginData)
+                        call.respond(HttpStatusCode.OK, loginData)
                     }
                 } catch (e: Exception) {
-                    println(e)
+                    e.printStackTrace()
                     call.respond(HttpStatusCode.BadRequest, "Invalid request data")
                 }
             }

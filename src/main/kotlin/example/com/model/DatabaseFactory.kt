@@ -1,15 +1,13 @@
 package example.com.model
 
 import example.com.model.authentication.UserTable
-import example.com.model.auto_update.AutoUpdateTable
+import example.com.model.app_data.AppDataTable
 import io.github.cdimascio.dotenv.Dotenv
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-
-import io.github.cdimascio.dotenv.dotenv
 
 
 object DatabaseFactory{
@@ -25,7 +23,7 @@ object DatabaseFactory{
 
 
         transaction (database) {
-            SchemaUtils.createMissingTablesAndColumns(AutoUpdateTable,UserTable)
+            SchemaUtils.createMissingTablesAndColumns(AppDataTable,UserTable)
         }
     }
 

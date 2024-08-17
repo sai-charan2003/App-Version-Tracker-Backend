@@ -20,12 +20,18 @@ fun Application.module() {
     configureSerialization()
     configureDatabase()
     install(CORS){
-        anyHost()
-        allowMethod(HttpMethod.Put)
+        anyHost() // Allows any host. Be cautious with this in production.
+        allowHeader(HttpHeaders.Authorization) // Allow Authorization header if you're using JWT
+        allowHeader(HttpHeaders.ContentType) // Allow Content-Type header
+        allowMethod(HttpMethod.Options) // Preflight requests
+        allowMethod(HttpMethod.Get)
         allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Delete)
-
-        allowNonSimpleContentTypes = true
+        allowMethod(HttpMethod.Patch)
+        allowMethod(HttpMethod.Head)
+        allowNonSimpleContentTypes = true // Allow non-simple content types
+        allowCredentials = true // Allow credentials
     }
 
 
