@@ -4,7 +4,7 @@ interface AppDataRepo{
     suspend fun getAllData() : List<AppData?>
     suspend fun getDataByAppName(appName : String) : AppData?
     suspend fun addData(appDataItem : AppData, userEmail:String)
-    suspend fun removeData(appDataItem: AppData)
+    suspend fun removeData(appUUID : String)
     suspend fun updateData(appDataItem: AppData, userEmail:String)
     suspend fun getDataByEmail(email:String): List<AppData?>
 

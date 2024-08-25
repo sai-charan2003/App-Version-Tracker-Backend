@@ -9,5 +9,6 @@ object AppDataTable:Table() {
     val id = integer("id").autoIncrement()
     val appDownloadLink = varchar("appDownloadLink",512)
     val apiKey = varchar("apiKey",512)
+    val appUUID = varchar("appUUID",512).nullable()
     override val primaryKey = PrimaryKey(id)
 }

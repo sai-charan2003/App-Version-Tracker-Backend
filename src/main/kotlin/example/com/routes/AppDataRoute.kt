@@ -56,7 +56,7 @@ fun Application.appDataRoute(appDataRepoImp: AppDataRepoImp) {
                         val updateData = call.receive<AppData>()
 
                         val existingData = appDataRepoImp.getDataByEmail(userEmail)
-                        if (existingData.none { it?.appName == updateData.appName }) {
+                        if (existingData.none { it?.appUUID == updateData.appUUID }) {
                             call.respond(HttpStatusCode.NotFound, "App not found")
                             return@patch
                         }
@@ -68,6 +68,21 @@ fun Application.appDataRoute(appDataRepoImp: AppDataRepoImp) {
                         call.respond(HttpStatusCode.InternalServerError, "An error occurred while processing your request")
                     }
                 }
+                delete("/deleteAppDetails") {
+                    try{
+                        val appUUID = call.parameters["appUUID"]
+                        if(appUUID!=null){
+                            appDataRepoImp.removeData(appUUID)
+                            call.respond(HttpStatusCode.OK,"Deleted")
+
+                        }
+                    } catch (ex:Exception){
+                        ex.printStackTrace()
+                        call.respond(HttpStatusCode.InternalServerError, "An error occurred while processing your request")
+
+                    }
+                }
+
             }
         }
 
@@ -89,6 +104,7 @@ fun Application.appDataRoute(appDataRepoImp: AppDataRepoImp) {
                         val data = appDataRepoImp.getDataByAPI(apiKey)
                         println(data)
                         call.respond(HttpStatusCode.OK,data)
+
                         print(appDataRepoImp.getDataByAPI(apiKey))
                     } else {
                          val allAppData = appDataRepoImp.getDataByAppNameAndAPI(api = apiKey , appName = appName)

@@ -3,6 +3,8 @@ package example.com.model.app_data
 import example.com.model.DatabaseFactory.dbQuery
 import example.com.model.authentication.UserRepoImp
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import java.util.UUID
 
 class AppDataRepoImp(userRepoImp : UserRepoImp) : AppDataRepo {
     val userRepoImp = userRepoImp
@@ -28,14 +30,17 @@ class AppDataRepoImp(userRepoImp : UserRepoImp) : AppDataRepo {
                 it[appVersionCode] = appDataItem.appVersionCode
                 it[appDownloadLink] = appDataItem.appDownloadLink
                 it[apiKey] = api!!
+                it[appUUID] = UUID.randomUUID().toString()
             }
             insert.resultedValues?.singleOrNull()?.let(::rowToAutoUpdate)
         }
 
     }
 
-    override suspend fun removeData(appDataItem: AppData) {
-
+    override suspend fun removeData(appUUID: String) {
+        dbQuery {
+             AppDataTable.deleteWhere {(AppDataTable.appUUID eq appUUID)}
+        }
     }
 
     override suspend fun updateData(appDataItem: AppData, userEmail:String) {
@@ -44,7 +49,7 @@ class AppDataRepoImp(userRepoImp : UserRepoImp) : AppDataRepo {
             println(api)
             println(appDataItem)
             AppDataTable.update(
-                where = { AppDataTable.appName eq appDataItem.appName and (AppDataTable.apiKey eq api!!) }
+                where = { AppDataTable.appUUID eq appDataItem.appUUID and (AppDataTable.apiKey eq api!!) }
             )  {
 
                     it[appName] = appDataItem.appName
@@ -84,7 +89,8 @@ class AppDataRepoImp(userRepoImp : UserRepoImp) : AppDataRepo {
                 appName = row[AppDataTable.appName],
                 appVersion = row[AppDataTable.appVersion],
                 appVersionCode = row[AppDataTable.appVersionCode],
-                appDownloadLink = row[AppDataTable.appDownloadLink]
+                appDownloadLink = row[AppDataTable.appDownloadLink],
+                appUUID = row[AppDataTable.appUUID]!!
 
 
             )
