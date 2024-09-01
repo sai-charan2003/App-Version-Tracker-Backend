@@ -70,9 +70,17 @@ fun Application.appDataRoute(appDataRepoImp: AppDataRepoImp) {
                 }
                 delete("/deleteAppDetails") {
                     try{
+                        val principal = call.principal<JWTPrincipal>()
+                        val userEmail = principal?.payload?.getClaim("username")?.asString()
+                        if(principal==null){
+                            call.respond(HttpStatusCode.Unauthorized,"Not Authorized")
+                            return@delete
+                        }
                         val appUUID = call.parameters["appUUID"]
                         if(appUUID!=null){
-                            appDataRepoImp.removeData(appUUID)
+                            if (userEmail != null) {
+                                appDataRepoImp.removeData(appUUID,userEmail)
+                            }
                             call.respond(HttpStatusCode.OK,"Deleted")
 
                         }

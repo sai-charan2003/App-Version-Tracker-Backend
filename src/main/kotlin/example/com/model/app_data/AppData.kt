@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AppData(
     val appName : String,
-    val appVersion : Int,
-    val appVersionCode: Int? = null,
+    val appVersion : Double,
+    val appVersionCode: Double? = null,
     val appDownloadLink : String,
     val appUUID: String? = null
 )

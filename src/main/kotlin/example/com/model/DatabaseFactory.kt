@@ -24,6 +24,7 @@ object DatabaseFactory{
 
         transaction (database) {
             SchemaUtils.createMissingTablesAndColumns(AppDataTable,UserTable)
+
         }
     }
 

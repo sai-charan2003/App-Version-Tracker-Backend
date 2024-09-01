@@ -37,9 +37,13 @@ class AppDataRepoImp(userRepoImp : UserRepoImp) : AppDataRepo {
 
     }
 
-    override suspend fun removeData(appUUID: String) {
+    override suspend fun removeData(appUUID: String,userEmail: String) {
         dbQuery {
-             AppDataTable.deleteWhere {(AppDataTable.appUUID eq appUUID)}
+            val api = userRepoImp.getUserApi(userEmail)
+            AppDataTable.deleteWhere {
+                (AppDataTable.appUUID eq appUUID) and (AppDataTable.apiKey eq api!!)
+            }
+
         }
     }
 
