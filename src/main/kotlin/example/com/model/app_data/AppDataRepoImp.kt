@@ -59,6 +59,7 @@ class AppDataRepoImp(userRepoImp : UserRepoImp) : AppDataRepo {
                     it[appName] = appDataItem.appName
                     it[appVersion] = appDataItem.appVersion
                     it[appVersionCode] = appDataItem.appVersionCode
+
                     it[apiKey] = api!!
 
             }
@@ -95,7 +96,6 @@ class AppDataRepoImp(userRepoImp : UserRepoImp) : AppDataRepo {
                 appVersionCode = row[AppDataTable.appVersionCode],
                 appDownloadLink = row[AppDataTable.appDownloadLink],
                 appUUID = row[AppDataTable.appUUID]!!
-
 
             )
         }

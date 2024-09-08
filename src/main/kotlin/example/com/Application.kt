@@ -15,23 +15,25 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+
     configureSecurity()
     routing()
     configureSerialization()
     configureDatabase()
     install(CORS){
-        anyHost() // Allows any host. Be cautious with this in production.
-        allowHeader(HttpHeaders.Authorization) // Allow Authorization header if you're using JWT
-        allowHeader(HttpHeaders.ContentType) // Allow Content-Type header
-        allowMethod(HttpMethod.Options) // Preflight requests
+        anyHost()
+        allowHeader(HttpHeaders.Authorization)
+        allowHeader(HttpHeaders.ContentType)
+        allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Get)
         allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Patch)
         allowMethod(HttpMethod.Head)
-        allowNonSimpleContentTypes = true // Allow non-simple content types
-        allowCredentials = true // Allow credentials
+        allowNonSimpleContentTypes = true
+        allowCredentials = true
+        allowHeaders { true }
     }
 
 

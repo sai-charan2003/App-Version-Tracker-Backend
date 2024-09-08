@@ -8,5 +8,7 @@ data class AppData(
     val appVersion : Double,
     val appVersionCode: Double? = null,
     val appDownloadLink : String,
-    val appUUID: String? = null
+    val appUUID: String? = null,
+//    val isMandatoryUpdate : Boolean? = null,
+//    val notes : String? = null
 )

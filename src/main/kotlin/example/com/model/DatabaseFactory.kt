@@ -10,26 +10,45 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.jetbrains.exposed.sql.transactions.transaction
 
 
-object DatabaseFactory{
+import java.io.File
 
-    fun init(){
-        val dotEnv = Dotenv.configure().directory("C:\\Users\\saich\\Developer\\Ktor\\Auto_Update").filename("secrets.env").load()
-         val database = Database.connect(
-            url = dotEnv["JDBC_URL"],
+object DatabaseFactory {
+
+    fun init() {
+        val isDocker = !File("C:\\Users\\saich\\Developer\\Ktor\\Auto_Update\\secrets.env").exists()
+
+        val (url, user, password) = if (isDocker) {
+            // Use Docker environment variables
+            Triple(
+                System.getenv("JDBC_URL"),
+                System.getenv("JDBC_username"),
+                System.getenv("JDBC_password")
+            )
+        } else {
+            // Use dotenv for local development
+            val dotEnv = Dotenv.configure()
+                .directory("C:\\Users\\saich\\Developer\\Ktor\\Auto_Update") // Local path
+                .filename("secrets.env")
+                .load()
+            Triple(
+                dotEnv["JDBC_URL"],
+                dotEnv["JDBC_username"],
+                dotEnv["JDBC_password"]
+            )
+        }
+
+        val database = Database.connect(
+            url = url,
             driver = "org.postgresql.Driver",
-            user = dotEnv["JDBC_username"],
-            password = dotEnv["JDBC_password"]
+            user = user,
+            password = password
         )
 
-
-        transaction (database) {
-            SchemaUtils.createMissingTablesAndColumns(AppDataTable,UserTable)
-
+        transaction(database) {
+            SchemaUtils.createMissingTablesAndColumns(AppDataTable, UserTable)
         }
     }
 
     suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
-
-
 }

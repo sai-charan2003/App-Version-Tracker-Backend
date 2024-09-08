@@ -10,5 +10,7 @@ object AppDataTable:Table() {
     val appDownloadLink = varchar("appDownloadLink",512)
     val apiKey = varchar("apiKey",512)
     val appUUID = varchar("appUUID",512).nullable()
+//    val isMandatoryUpdate = bool("isMandatoryUpdate").nullable()
+//    val notes = text("notes").nullable()
     override val primaryKey = PrimaryKey(id)
 }

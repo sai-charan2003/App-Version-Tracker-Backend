@@ -16,6 +16,7 @@ fun Application.appDataRoute(appDataRepoImp: AppDataRepoImp) {
             route("/appData") {
                 post("/postAppDetails") {
                     try {
+
                         val principal = call.principal<JWTPrincipal>()
                         if(principal==null){
                             call.respond(HttpStatusCode.Unauthorized,"Not Authorized")
@@ -53,9 +54,15 @@ fun Application.appDataRoute(appDataRepoImp: AppDataRepoImp) {
                             return@patch
                         }
 
+
+
                         val updateData = call.receive<AppData>()
 
                         val existingData = appDataRepoImp.getDataByEmail(userEmail)
+                        if (existingData.filter{it?.appUUID != updateData.appUUID}.any { it?.appName == updateData.appName }) {
+                            call.respond(HttpStatusCode.Conflict, "App details already exist")
+                            return@patch
+                        }
                         if (existingData.none { it?.appUUID == updateData.appUUID }) {
                             call.respond(HttpStatusCode.NotFound, "App not found")
                             return@patch
@@ -93,7 +100,6 @@ fun Application.appDataRoute(appDataRepoImp: AppDataRepoImp) {
 
             }
         }
-
         route("/getData") {
             get {
                 try {
@@ -104,31 +110,31 @@ fun Application.appDataRoute(appDataRepoImp: AppDataRepoImp) {
                         call.respond(HttpStatusCode.BadRequest, "API Key not provided")
                         return@get
                     }
-                    print(apiKey)
-
-
+                    println(apiKey)
 
                     if (appName == null) {
                         val data = appDataRepoImp.getDataByAPI(apiKey)
                         println(data)
-                        call.respond(HttpStatusCode.OK,data)
-
-                        print(appDataRepoImp.getDataByAPI(apiKey))
+                        if (data != null) {
+                            call.respond(HttpStatusCode.OK, data)
+                        } else {
+                            call.respond(HttpStatusCode.NotFound, "No data found")
+                        }
                     } else {
-                         val allAppData = appDataRepoImp.getDataByAppNameAndAPI(api = apiKey , appName = appName)
-                        if(allAppData!=null) {
-                            call.respond(allAppData)
-                        } else{
+                        val allAppData = appDataRepoImp.getDataByAppNameAndAPI(api = apiKey, appName = appName)
+                        if (allAppData != null) {
+                            call.respond(HttpStatusCode.OK, allAppData)
+                        } else {
                             call.respond(HttpStatusCode.NotFound, "No data found")
                         }
                     }
-
-                    call.respond(HttpStatusCode.OK)
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     call.respond(HttpStatusCode.InternalServerError, "An error occurred while processing your request")
                 }
             }
         }
+
+
     }
 }
